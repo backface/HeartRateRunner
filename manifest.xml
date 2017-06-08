@@ -2,14 +2,7 @@
     <iq:application entry="RunningTrends" id="8f97a970-f2c4-4f1a-8c63-4b50b0b65232" launcherIcon="LauncherIcon" name="AppName" type="datafield">
 
         <iq:products>
-            <iq:product id="fenix3"/>
-            <iq:product id="fenix3_hr"/>
-            <iq:product id="fenix5"/>
-            <iq:product id="fenix5s"/>
-            <iq:product id="fenix5x"/>
-            <iq:product id="d2bravo"/>
-            <iq:product id="d2bravo_titanium"/>
-            <iq:product id="fenixchronos"/>
+            <iq:product id="vivoactive_hr"/>
         </iq:products>
         
         <iq:permissions>

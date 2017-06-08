@@ -19,6 +19,7 @@ class RunningTrends extends App.AppBase {
 class RunningTrendsView extends Ui.DataField {
 
     hidden const CENTER = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
+    hidden const RIGHT = Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER;
     hidden const LEFT = Graphics.TEXT_JUSTIFY_LEFT;
     hidden const LABEL_FONT = Graphics.FONT_XTINY;
     hidden const VALUE_FONT = Graphics.FONT_NUMBER_MEDIUM;
@@ -46,8 +47,8 @@ class RunningTrendsView extends Ui.DataField {
     hidden var hasBackgroundColorOption = false;
     
     // data for charts and averages
-    hidden var paceChartData = new DataQueue(5);
-    hidden var hrChartData = new DataQueue(60);
+    hidden var paceChartData = new DataQueue(4);
+    hidden var hrChartData = new DataQueue(40);
     hidden var lastHrData = new DataQueue(30);
     //hidden var lastLapPace = new DataQueue(10); // averaging pace
 
@@ -63,7 +64,7 @@ class RunningTrendsView extends Ui.DataField {
 
     // heart rate zones
     hidden var zoneId = 0;
-    hidden var zoneMaxLimits = [113, 139, 155, 165, 174, 200];
+    hidden var zoneMaxLimits = [113, 130, 146, 158, 170, 184];
     hidden var degrees = [[0,0],[220, 166],[166, 112],[112, 58],[58, 4],[4, 320],[4, 320]];
     hidden var maxHr = zoneMaxLimits[5];
     hidden var zoneColor = [Graphics.COLOR_TRANSPARENT, Graphics.COLOR_LT_GRAY, Graphics.COLOR_BLUE, Graphics.COLOR_GREEN, Graphics.COLOR_ORANGE, Graphics.COLOR_RED, Graphics.COLOR_RED];
@@ -123,6 +124,7 @@ class RunningTrendsView extends Ui.DataField {
         centerX = width>>1;
         centerY = height>>1;
         onUpdate(dc);
+        System.println("screen size: " + width + " x " + height);
     }
     
     function onUpdate(dc) {
@@ -175,20 +177,20 @@ class RunningTrendsView extends Ui.DataField {
     function drawValues(dc) {
 
         //hr
-        drawHrChart(dc, 10, centerY-51, 50);
+        drawHrChart(dc, 5, centerY-48, 50);
         dc.setColor(textColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(width-55, centerY-31, VALUE_FONT, hr>0 ? hr.format("%d") : ZERO_HR, CENTER); 
+        dc.drawText(width-10, centerY-27, VALUE_FONT, hr>0 ? hr.format("%d") : ZERO_HR, RIGHT); 
 
         
         //pace
-        dc.drawText(width-55, centerY+31, VALUE_FONT, getMinutesPerKmOrMile(lapAvgSpeed), CENTER);
+        dc.drawText(width-10, centerY+30, VALUE_FONT, getMinutesPerKmOrMile(lapAvgSpeed), RIGHT);
             
-        drawPaceDiff(dc, 115, centerY+1, 50);
-        drawPaceChart(dc, 20, centerY+1, 50);
+        drawPaceDiff(dc, width/2-8 , centerY+1, 50);
+        drawPaceChart(dc, 5, centerY+1, 50);
         
         dc.setColor(darkColor, Graphics.COLOR_TRANSPARENT);
-        //dc.drawText(width-55, centerY+2, LABEL_FONT, "pace " + getMinutesPerKmOrMile(currentSpeed) , CENTER);
-        dc.drawText(width-55, centerY+2, LABEL_FONT, avgPaceStr, CENTER);
+        //dc.drawText(width-55, centerY+2, LABEL_FONT, "pace " + getMinutesPerKmOrMile(currentSpeed) , RIGHT);
+        dc.drawText(width-10, centerY+2, LABEL_FONT, avgPaceStr, RIGHT);
 
         
         if(height>200){
@@ -205,7 +207,9 @@ class RunningTrendsView extends Ui.DataField {
             dc.drawText(centerX + dc.getTextWidthInPixels(d, VALUE_FONT)>>1+5, 40, LABEL_FONT, kmOrMileStr, LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
             dc.setColor(textColor, Graphics.COLOR_TRANSPARENT);
             dc.drawText(centerX , 33, VALUE_FONT, d, CENTER);
-
+			dc.setPenWidth(1);
+			dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+			dc.drawLine(8, 54, width-8, 54);
 
             //duration
             d = (showLapMetrics == false) ? elapsedTime : elapsedTime - lastLapStartTimer;
@@ -227,10 +231,14 @@ class RunningTrendsView extends Ui.DataField {
             } else {
                 d = ZERO_TIME;
             } 
-            dc.drawText(centerX, height-33, VALUE_FONT, d, CENTER);
+            dc.setColor(textColor, Graphics.COLOR_TRANSPARENT);            
+            dc.drawText(centerX, height-28, VALUE_FONT, d, CENTER);
+			dc.setPenWidth(1);
+			dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+			dc.drawLine(8, height-46, width-8, height-46);
         
             // hr zone arcs
-            drawZoneBarsArcs(dc, centerY+1, centerX, centerY, hr); //radius, center x, center y
+            drawZoneBarsArcs(dc, centerX, centerX, centerX, hr); //radius, center x, center y
         }
 
     }
@@ -432,6 +440,7 @@ class RunningTrendsView extends Ui.DataField {
             dc.setColor(zoneColor[i], Graphics.COLOR_TRANSPARENT);
             dc.drawArc(centerX, centerY, radius - 4, 1, degrees[i][0], degrees[i][1]);	
 		}
+		radius = radius + 5;
 		// curret hr indicator
 		if(hr > zoneMaxLimits[0] && hr <= zoneMaxLimits[1]){
 			zonedegree = (58.0 / (zoneMaxLimits[1] - zoneMaxLimits[0])) * (zoneMaxLimits[1]-hr);

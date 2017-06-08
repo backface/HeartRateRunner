@@ -1,1 +1,1 @@
-cp bin/*.prg /Volumes/GARMIN/GARMIN/APPS
+cp bin/*.prg /media/mash/GARMIN/GARMIN/APPS/
